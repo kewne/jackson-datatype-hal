@@ -7,8 +7,12 @@ import org.junit.Test;
 
 import java.io.IOException;
 import java.net.URI;
+import java.util.Arrays;
 
+import static io.github.kewne.jackson.hal.HalLink.to;
 import static io.github.kewne.jackson.hal.HalLinks.builder;
+import static io.github.kewne.jackson.hal.HalRel.multiple;
+import static io.github.kewne.jackson.hal.HalRel.single;
 import static org.junit.Assert.assertEquals;
 
 public class SerializationTests {
@@ -22,7 +26,7 @@ public class SerializationTests {
     }
 
     @Test
-    public void shouldSerializeSimpleObjectWithoutLinks() throws IOException {
+    public void simpleObjectWithoutLinks() throws IOException {
         HalResource<SimpleObject> resource = new HalResource<>(new SimpleObject());
         assertEquals(
                 "{}",
@@ -30,7 +34,7 @@ public class SerializationTests {
     }
 
     @Test
-    public void shouldSerializeSimpleObjectWithSingleLink() throws IOException {
+    public void simpleObjectWithSingleRel() throws IOException {
         HalResource<SimpleObject> resource = new HalResource<>(
                 new SimpleObject(),
                 HalLinks.self(URI.create("http://example.com")));
@@ -40,7 +44,7 @@ public class SerializationTests {
     }
 
     @Test
-    public void shouldSerializeSimpleObjectWithMultipleLinks() throws IOException {
+    public void simpleObjectWithMultipleRels() throws IOException {
         HalResource<SimpleObject> resource = new HalResource<>(
                 new SimpleObject(),
                 builder(URI.create("http://example.com"))
@@ -50,6 +54,28 @@ public class SerializationTests {
                 "{\"_links\":{" +
                         "\"self\":{\"href\":\"http://example.com\"}," +
                         "\"other\":{\"href\":\"http://example.com\"}" +
+                        "}}",
+                objectMapper.writeValueAsString(resource));
+    }
+
+    @Test
+    public void simpleObjectWithMultipleLinksForSingleRel() throws IOException {
+        HalResource<SimpleObject> resource = new HalResource<>(
+                new SimpleObject(),
+                builder(single(URI.create("http://example.com")))
+                        .withRel("other",
+                                multiple(
+                                        Arrays.asList(
+                                                to(URI.create("http://example.com")),
+                                                to(URI.create("http://example.com")))))
+                        .build());
+        assertEquals(
+                "{\"_links\":{" +
+                        "\"self\":{\"href\":\"http://example.com\"}," +
+                        "\"other\":[" +
+                        "{\"href\":\"http://example.com\"}," +
+                        "{\"href\":\"http://example.com\"}" +
+                        "]" +
                         "}}",
                 objectMapper.writeValueAsString(resource));
     }

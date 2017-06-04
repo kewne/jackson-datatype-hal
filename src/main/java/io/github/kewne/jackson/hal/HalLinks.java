@@ -7,32 +7,38 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
+import static io.github.kewne.jackson.hal.HalRel.single;
+
 public final class HalLinks {
 
     @JsonProperty
-    private final Map<String, URI> linkMap;
+    private final Map<String, HalRel> relMap;
 
-    private HalLinks(Map<String, URI> linkMap) {
-        this.linkMap = linkMap;
+    private HalLinks(Map<String, HalRel> relMap) {
+        this.relMap = relMap;
     }
 
-    public static HalLinks self(URI uri) {
-        return new HalLinks(Collections.singletonMap("self", uri));
+    public static HalLinks self(URI selfRel) {
+        return new HalLinks(Collections.singletonMap("self", single(selfRel)));
     }
 
-    Map<String, URI> getLinkMap() {
-        return linkMap;
+    Map<String, HalRel> getRelMap() {
+        return relMap;
     }
 
-    public static HalLinkBuilder builder(URI selfUri) {
-        return new HalLinkBuilder(selfUri);
+    public static HalLinksBuilder builder(URI selfUri) {
+        return new HalLinksBuilder(single(selfUri));
     }
 
-    public static final class HalLinkBuilder {
+    public static HalLinksBuilder builder(HalRel selfUri) {
+        return new HalLinksBuilder(selfUri);
+    }
 
-        private final Map<String, URI> linkMap = new HashMap<>();
+    public static final class HalLinksBuilder {
 
-        private HalLinkBuilder(URI selfUri) {
+        private final Map<String, HalRel> linkMap = new HashMap<>();
+
+        private HalLinksBuilder(HalRel selfUri) {
             linkMap.put("self", selfUri);
         }
 
@@ -40,7 +46,12 @@ public final class HalLinks {
             return new HalLinks(new HashMap<>(linkMap));
         }
 
-        public HalLinkBuilder withRel(String rel, URI uri) {
+        public HalLinksBuilder withRel(String rel, URI uri) {
+            linkMap.put(rel, HalRel.single(uri));
+            return this;
+        }
+
+        public HalLinksBuilder withRel(String rel, HalRel uri) {
             linkMap.put(rel, uri);
             return this;
         }

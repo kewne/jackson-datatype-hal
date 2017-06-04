@@ -5,7 +5,6 @@ import com.fasterxml.jackson.databind.SerializerProvider;
 import com.fasterxml.jackson.databind.ser.std.StdSerializer;
 
 import java.io.IOException;
-import java.net.URI;
 import java.util.Map;
 
 public class HalLinksSerializer extends StdSerializer<HalLinks> {
@@ -19,12 +18,9 @@ public class HalLinksSerializer extends StdSerializer<HalLinks> {
                           JsonGenerator gen,
                           SerializerProvider provider) throws IOException {
         gen.writeStartObject();
-        for (Map.Entry<String, URI> entry : value.getLinkMap().entrySet()) {
+        for (Map.Entry<String, HalRel> entry : value.getRelMap().entrySet()) {
             gen.writeFieldName(entry.getKey());
-            gen.writeStartObject();
-            gen.writeFieldName("href");
             gen.writeObject(entry.getValue());
-            gen.writeEndObject();
         }
         gen.writeEndObject();
     }

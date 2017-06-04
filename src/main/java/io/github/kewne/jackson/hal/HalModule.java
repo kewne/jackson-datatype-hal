@@ -10,5 +10,6 @@ public class HalModule extends SimpleModule {
                 new Version(0, 1, 0,
                         null, "io.github.kewne", "jackson-datatype-hal"));
         addSerializer(HalLinks.class, new HalLinksSerializer());
+        addSerializer(HalRel.class, new HalRelSerializer());
     }
 }
