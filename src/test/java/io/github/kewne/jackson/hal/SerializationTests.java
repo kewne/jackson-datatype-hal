@@ -8,6 +8,7 @@ import org.junit.Test;
 import java.io.IOException;
 import java.net.URI;
 
+import static io.github.kewne.jackson.hal.HalLinks.builder;
 import static org.junit.Assert.assertEquals;
 
 public class SerializationTests {
@@ -29,12 +30,27 @@ public class SerializationTests {
     }
 
     @Test
-    public void shouldSerializeSimpleObjectWithLinks() throws IOException {
+    public void shouldSerializeSimpleObjectWithSingleLink() throws IOException {
         HalResource<SimpleObject> resource = new HalResource<>(
                 new SimpleObject(),
                 HalLinks.self(URI.create("http://example.com")));
         assertEquals(
                 "{\"_links\":{\"self\":{\"href\":\"http://example.com\"}}}",
+                objectMapper.writeValueAsString(resource));
+    }
+
+    @Test
+    public void shouldSerializeSimpleObjectWithMultipleLinks() throws IOException {
+        HalResource<SimpleObject> resource = new HalResource<>(
+                new SimpleObject(),
+                builder(URI.create("http://example.com"))
+                        .withRel("other", URI.create("http://example.com"))
+                        .build());
+        assertEquals(
+                "{\"_links\":{" +
+                        "\"self\":{\"href\":\"http://example.com\"}," +
+                        "\"other\":{\"href\":\"http://example.com\"}" +
+                        "}}",
                 objectMapper.writeValueAsString(resource));
     }
 }
