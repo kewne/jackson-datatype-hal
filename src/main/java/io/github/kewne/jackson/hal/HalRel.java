@@ -14,6 +14,10 @@ public final class HalRel {
         this.links = links;
     }
 
+    HalRel(HalLink link) {
+        this.links = Collections.singletonList(link);
+    }
+
     public static HalRel single(URI href) {
         return new HalRel(
                 Collections.singletonList(
@@ -27,4 +31,9 @@ public final class HalRel {
     List<HalLink> getLinks() {
         return links;
     }
+
+    public HalLink getSingleLink() {
+        return links.get(0);
+    }
+
 }

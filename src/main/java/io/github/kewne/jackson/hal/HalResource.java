@@ -1,27 +1,24 @@
 package io.github.kewne.jackson.hal;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonUnwrapped;
 
 /**
  * A resource represented as HAL.
- *
- * @param <T> the contained resource
  */
-public class HalResource<T> {
-
-    @JsonUnwrapped
-    private final T resource;
+public class HalResource {
 
     @JsonProperty
     private final HalLinks _links;
 
-    public HalResource(T resource) {
-        this(resource, null);
+    public HalResource() {
+        this(null);
     }
 
-    public HalResource(T resource, HalLinks links) {
-        this.resource = resource;
+    public HalResource(HalLinks links) {
         _links = links;
+    }
+
+    public HalRel getRel(String rel) {
+        return _links.getRelMap().get(rel);
     }
 }

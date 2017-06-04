@@ -27,7 +27,7 @@ public class SerializationTests {
 
     @Test
     public void simpleObjectWithoutLinks() throws IOException {
-        HalResource<SimpleObject> resource = new HalResource<>(new SimpleObject());
+        HalResource resource = new WrappedHalResource<>(new SimpleObject());
         assertEquals(
                 "{}",
                 objectMapper.writeValueAsString(resource));
@@ -35,7 +35,7 @@ public class SerializationTests {
 
     @Test
     public void simpleObjectWithSingleRel() throws IOException {
-        HalResource<SimpleObject> resource = new HalResource<>(
+        HalResource resource = new WrappedHalResource<>(
                 new SimpleObject(),
                 HalLinks.self(URI.create("http://example.com")));
         assertEquals(
@@ -45,7 +45,7 @@ public class SerializationTests {
 
     @Test
     public void simpleObjectWithMultipleRels() throws IOException {
-        HalResource<SimpleObject> resource = new HalResource<>(
+        HalResource resource = new WrappedHalResource<>(
                 new SimpleObject(),
                 builder(URI.create("http://example.com"))
                         .withRel("other", URI.create("http://example.com"))
@@ -60,7 +60,7 @@ public class SerializationTests {
 
     @Test
     public void simpleObjectWithMultipleLinksForSingleRel() throws IOException {
-        HalResource<SimpleObject> resource = new HalResource<>(
+        HalResource resource = new WrappedHalResource<>(
                 new SimpleObject(),
                 builder(single(URI.create("http://example.com")))
                         .withRel("other",

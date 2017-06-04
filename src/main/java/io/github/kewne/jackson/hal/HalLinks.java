@@ -42,6 +42,9 @@ public final class HalLinks {
             linkMap.put("self", selfUri);
         }
 
+        HalLinksBuilder() {
+        }
+
         public HalLinks build() {
             return new HalLinks(new HashMap<>(linkMap));
         }
