@@ -36,4 +36,8 @@ public final class HalRel {
         return links.get(0);
     }
 
+    public List<HalLink> getMultipleLinks() {
+        return links;
+    }
+
 }

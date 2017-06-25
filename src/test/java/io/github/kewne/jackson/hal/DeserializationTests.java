@@ -28,4 +28,17 @@ public class DeserializationTests {
 
         assertEquals(URI.create("http://example.com"), result.getRel("self").getSingleLink().getHref());
     }
+
+    @Test
+    public void singleRelMultipleLinsk() throws IOException {
+        HalResource result =
+                objectMapper.readValue("{\"_links\":{\"assoc\":[" +
+                                "{\"href\":\"http://example.com\"}," +
+                                "{\"href\":\"http://example.com\"}" +
+                                "]}}",
+                        new TypeReference<HalResource>() {
+                        });
+
+        assertEquals(2, result.getRel("assoc").getMultipleLinks().size());
+    }
 }

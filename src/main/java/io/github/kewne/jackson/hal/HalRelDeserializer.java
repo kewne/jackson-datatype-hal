@@ -21,7 +21,7 @@ public class HalRelDeserializer extends StdDeserializer<HalRel> {
         JsonToken startToken = p.nextToken();
         if (startToken == JsonToken.START_ARRAY) {
             List<HalLink> links = new ArrayList<>();
-            while (p.currentToken() != JsonToken.END_ARRAY) {
+            while (p.nextToken() != JsonToken.END_ARRAY) {
                 links.add(ctxt.readValue(p, HalLink.class));
             }
             return HalRel.multiple(links);
