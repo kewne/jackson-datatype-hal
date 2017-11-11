@@ -1,14 +1,16 @@
 package io.github.kewne.jackson.hal;
 
-import com.fasterxml.jackson.core.type.TypeReference;
+import com.damnhandy.uri.template.jackson.datatype.UriTemplateModule;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
 import java.io.IOException;
-import java.net.URI;
+import java.util.List;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 
 public class DeserializationTests {
 
@@ -17,28 +19,43 @@ public class DeserializationTests {
     @BeforeClass
     public static void setUp() {
         objectMapper.registerModule(new HalModule());
+        objectMapper.registerModule(new UriTemplateModule());
     }
 
     @Test
     public void singleRel() throws IOException {
         HalResource result =
                 objectMapper.readValue("{\"_links\":{\"self\":{\"href\":\"http://example.com\"}}}",
-                        new TypeReference<HalResource>() {
-                        });
+                        HalResource.class);
 
-        assertEquals(URI.create("http://example.com"), result.getRel("self").getSingleLink().getHref());
+        HalLink selfLink = result.getRel("self").getSingleLink();
+        assertEquals("http://example.com", selfLink.getHref());
+        assertFalse(selfLink.isTemplated());
     }
 
     @Test
-    public void singleRelMultipleLinsk() throws IOException {
+    public void singleRelMultipleLinks() throws IOException {
         HalResource result =
                 objectMapper.readValue("{\"_links\":{\"assoc\":[" +
                                 "{\"href\":\"http://example.com\"}," +
                                 "{\"href\":\"http://example.com\"}" +
                                 "]}}",
-                        new TypeReference<HalResource>() {
-                        });
+                        HalResource.class);
 
-        assertEquals(2, result.getRel("assoc").getMultipleLinks().size());
+        List<HalLink> links = result.getRel("assoc").getMultipleLinks();
+        assertEquals(2, links.size());
+        assertFalse(links.stream()
+                .allMatch(HalLink::isTemplated));
+    }
+
+    @Test
+    public void relWithTemplatedLink() throws IOException {
+        HalResource result =
+                objectMapper.readValue("{\"_links\":{\"find-by-id\":{\"href\":\"http://example.com/data/{id}\"}}}",
+                        HalResource.class);
+
+        HalLink link = result.getRel("find-by-id").getSingleLink();
+        assertEquals("http://example.com/data/{id}", link.getHref());
+        assertTrue(link.isTemplated());
     }
 }

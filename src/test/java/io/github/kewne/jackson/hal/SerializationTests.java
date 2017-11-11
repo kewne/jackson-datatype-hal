@@ -1,12 +1,12 @@
 package io.github.kewne.jackson.hal;
 
+import com.damnhandy.uri.template.jackson.datatype.UriTemplateModule;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
 import java.io.IOException;
-import java.net.URI;
 import java.util.Arrays;
 
 import static io.github.kewne.jackson.hal.HalLink.to;
@@ -23,6 +23,7 @@ public class SerializationTests {
     public static void setUp() {
         objectMapper.setSerializationInclusion(JsonInclude.Include.NON_NULL);
         objectMapper.registerModule(new HalModule());
+        objectMapper.registerModule(new UriTemplateModule());
     }
 
     @Test
@@ -37,9 +38,9 @@ public class SerializationTests {
     public void simpleObjectWithSingleRel() throws IOException {
         HalResource resource = new WrappedHalResource<>(
                 new SimpleObject(),
-                HalLinks.self(URI.create("http://example.com")));
+                HalLinks.self("http://example.com"));
         assertEquals(
-                "{\"_links\":{\"self\":{\"href\":\"http://example.com\"}}}",
+                "{\"_links\":{\"self\":{\"href\":\"http://example.com\",\"templated\":false}}}",
                 objectMapper.writeValueAsString(resource));
     }
 
@@ -47,13 +48,13 @@ public class SerializationTests {
     public void simpleObjectWithMultipleRels() throws IOException {
         HalResource resource = new WrappedHalResource<>(
                 new SimpleObject(),
-                builder(URI.create("http://example.com"))
-                        .withRel("other", URI.create("http://example.com"))
+                builder("http://example.com")
+                        .withRel("other", "http://example.com")
                         .build());
         assertEquals(
                 "{\"_links\":{" +
-                        "\"self\":{\"href\":\"http://example.com\"}," +
-                        "\"other\":{\"href\":\"http://example.com\"}" +
+                        "\"self\":{\"href\":\"http://example.com\",\"templated\":false}," +
+                        "\"other\":{\"href\":\"http://example.com\",\"templated\":false}" +
                         "}}",
                 objectMapper.writeValueAsString(resource));
     }
@@ -62,19 +63,19 @@ public class SerializationTests {
     public void simpleObjectWithMultipleLinksForSingleRel() throws IOException {
         HalResource resource = new WrappedHalResource<>(
                 new SimpleObject(),
-                builder(single(URI.create("http://example.com")))
+                builder(single("http://example.com"))
                         .withRel("other",
                                 multiple(
                                         Arrays.asList(
-                                                to(URI.create("http://example.com")),
-                                                to(URI.create("http://example.com")))))
+                                                to("http://example.com"),
+                                                to("http://example.com"))))
                         .build());
         assertEquals(
                 "{\"_links\":{" +
-                        "\"self\":{\"href\":\"http://example.com\"}," +
+                        "\"self\":{\"href\":\"http://example.com\",\"templated\":false}," +
                         "\"other\":[" +
-                        "{\"href\":\"http://example.com\"}," +
-                        "{\"href\":\"http://example.com\"}" +
+                        "{\"href\":\"http://example.com\",\"templated\":false}," +
+                        "{\"href\":\"http://example.com\",\"templated\":false}" +
                         "]" +
                         "}}",
                 objectMapper.writeValueAsString(resource));

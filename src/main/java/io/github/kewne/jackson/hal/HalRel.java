@@ -1,6 +1,5 @@
 package io.github.kewne.jackson.hal;
 
-import java.net.URI;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -18,10 +17,10 @@ public final class HalRel {
         this.links = Collections.singletonList(link);
     }
 
-    public static HalRel single(URI href) {
+    public static HalRel single(String href) {
         return new HalRel(
                 Collections.singletonList(
-                        new HalLink(href)));
+                        HalLink.to(href)));
     }
 
     public static HalRel multiple(Collection<HalLink> links) {

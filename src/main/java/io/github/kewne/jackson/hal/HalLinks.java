@@ -2,7 +2,6 @@ package io.github.kewne.jackson.hal;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 
-import java.net.URI;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
@@ -18,20 +17,20 @@ public final class HalLinks {
         this.relMap = relMap;
     }
 
-    public static HalLinks self(URI selfRel) {
+    public static HalLinks self(String selfRel) {
         return new HalLinks(Collections.singletonMap("self", single(selfRel)));
     }
 
-    Map<String, HalRel> getRelMap() {
-        return relMap;
-    }
-
-    public static HalLinksBuilder builder(URI selfUri) {
+    public static HalLinksBuilder builder(String selfUri) {
         return new HalLinksBuilder(single(selfUri));
     }
 
     public static HalLinksBuilder builder(HalRel selfUri) {
         return new HalLinksBuilder(selfUri);
+    }
+
+    Map<String, HalRel> getRelMap() {
+        return relMap;
     }
 
     public static final class HalLinksBuilder {
@@ -49,7 +48,7 @@ public final class HalLinks {
             return new HalLinks(new HashMap<>(linkMap));
         }
 
-        public HalLinksBuilder withRel(String rel, URI uri) {
+        public HalLinksBuilder withRel(String rel, String uri) {
             linkMap.put(rel, HalRel.single(uri));
             return this;
         }
