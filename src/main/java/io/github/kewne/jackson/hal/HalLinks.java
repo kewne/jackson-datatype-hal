@@ -25,8 +25,11 @@ public final class HalLinks {
         return new HalLinksBuilder(single(selfUri));
     }
 
-    public static HalLinksBuilder builder(HalRel selfUri) {
-        return new HalLinksBuilder(selfUri);
+    public static HalLinks singleRel(String rel, HalLink link) {
+
+        return new HalLinksBuilder()
+                .withRel(rel, new HalRel(link))
+                .build();
     }
 
     Map<String, HalRel> getRelMap() {

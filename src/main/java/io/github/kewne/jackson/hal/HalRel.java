@@ -20,7 +20,7 @@ public final class HalRel {
     public static HalRel single(String href) {
         return new HalRel(
                 Collections.singletonList(
-                        HalLink.to(href)));
+                        HalLink.linkTo(href)));
     }
 
     public static HalRel multiple(Collection<HalLink> links) {

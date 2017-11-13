@@ -1,7 +1,6 @@
 package io.github.kewne.jackson.hal;
 
 import com.fasterxml.jackson.core.JsonParser;
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.JsonToken;
 import com.fasterxml.jackson.databind.DeserializationContext;
 import com.fasterxml.jackson.databind.deser.std.StdDeserializer;
@@ -17,7 +16,7 @@ public class HalRelDeserializer extends StdDeserializer<HalRel> {
     }
 
     @Override
-    public HalRel deserialize(JsonParser p, DeserializationContext ctxt) throws IOException, JsonProcessingException {
+    public HalRel deserialize(JsonParser p, DeserializationContext ctxt) throws IOException {
         JsonToken startToken = p.nextToken();
         if (startToken == JsonToken.START_ARRAY) {
             List<HalLink> links = new ArrayList<>();

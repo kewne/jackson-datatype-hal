@@ -2,6 +2,7 @@ package io.github.kewne.jackson.hal;
 
 import com.damnhandy.uri.template.jackson.datatype.UriTemplateModule;
 import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -9,10 +10,9 @@ import org.junit.Test;
 import java.io.IOException;
 import java.util.Arrays;
 
-import static io.github.kewne.jackson.hal.HalLink.to;
+import static io.github.kewne.jackson.hal.HalLink.linkTo;
 import static io.github.kewne.jackson.hal.HalLinks.builder;
 import static io.github.kewne.jackson.hal.HalRel.multiple;
-import static io.github.kewne.jackson.hal.HalRel.single;
 import static org.junit.Assert.assertEquals;
 
 public class SerializationTests {
@@ -63,12 +63,12 @@ public class SerializationTests {
     public void simpleObjectWithMultipleLinksForSingleRel() throws IOException {
         HalResource resource = new WrappedHalResource<>(
                 new SimpleObject(),
-                builder(single("http://example.com"))
+                builder("http://example.com")
                         .withRel("other",
                                 multiple(
                                         Arrays.asList(
-                                                to("http://example.com"),
-                                                to("http://example.com"))))
+                                                linkTo("http://example.com"),
+                                                linkTo("http://example.com"))))
                         .build());
         assertEquals(
                 "{\"_links\":{" +
@@ -80,4 +80,18 @@ public class SerializationTests {
                         "}}",
                 objectMapper.writeValueAsString(resource));
     }
+
+    @Test
+    public void linkType() throws JsonProcessingException {
+        HalResource resource = new HalResource(
+                HalLinks.singleRel("assoc",
+                        linkTo("http://example.com/test",
+                                spec -> spec.type("application/hal+json"))));
+        assertEquals(
+                "{\"_links\":{" +
+                        "\"assoc\":{\"href\":\"http://example.com/test\",\"type\":\"application/hal+json\",\"templated\":false}" +
+                        "}}",
+                objectMapper.writeValueAsString(resource));
+    }
+
 }
