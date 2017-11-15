@@ -58,4 +58,16 @@ public class DeserializationTests {
         assertEquals("http://example.com/data/{id}", link.getHref());
         assertTrue(link.isTemplated());
     }
+
+    @Test
+    public void relWithType() throws IOException {
+        HalResource result =
+                objectMapper.readValue("{\"_links\":{" +
+                                "\"self\":{\"href\":\"http://example.com/data\",\"type\":\"application/hal+json\"}" +
+                                "}}",
+                        HalResource.class);
+
+        HalLink link = result.getRel("self").getSingleLink();
+        assertEquals("application/hal+json", link.getType());
+    }
 }
