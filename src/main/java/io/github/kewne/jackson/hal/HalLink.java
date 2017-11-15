@@ -2,8 +2,10 @@ package io.github.kewne.jackson.hal;
 
 import com.damnhandy.uri.template.UriTemplate;
 import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
+import java.net.URI;
 import java.util.Objects;
 import java.util.function.Consumer;
 
@@ -15,12 +17,15 @@ public final class HalLink {
     private final UriTemplate href;
 
     private final String type;
+    private final URI deprecationUri;
 
     @JsonCreator
     private HalLink(@JsonProperty("href") String href,
-                    @JsonProperty("type") String type) {
+                    @JsonProperty("type") String type,
+                    @JsonProperty("deprecation") URI deprecationUri) {
         this.href = UriTemplate.fromTemplate(Objects.requireNonNull(href));
         this.type = type;
+        this.deprecationUri = deprecationUri;
     }
 
     /**
@@ -73,9 +78,21 @@ public final class HalLink {
         return type;
     }
 
+    @JsonIgnore
+    public boolean isDeprecated() {
+        return deprecationUri != null;
+    }
+
+    @JsonProperty("deprecation")
+    public URI getDeprecationUri() {
+        return deprecationUri;
+    }
+
     public static final class HalLinkSpecification {
 
         private String type;
+
+        private URI deprecationUri;
 
         private HalLinkSpecification() {
 
@@ -92,8 +109,19 @@ public final class HalLink {
             return this;
         }
 
+        /**
+         * Sets the link as deprecated.
+         *
+         * @param deprecationUri a URI for a resource describing the reason for deprecation
+         * @return this specification
+         */
+        public HalLinkSpecification deprecated(URI deprecationUri) {
+            this.deprecationUri = deprecationUri;
+            return this;
+        }
+
         private HalLink build(String href) {
-            return new HalLink(href, type);
+            return new HalLink(href, type, deprecationUri);
         }
     }
 }

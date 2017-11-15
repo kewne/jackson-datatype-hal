@@ -6,6 +6,7 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 
 import java.io.IOException;
+import java.net.URI;
 import java.util.List;
 
 import static org.junit.Assert.assertEquals;
@@ -69,5 +70,18 @@ public class DeserializationTests {
 
         HalLink link = result.getRel("self").getSingleLink();
         assertEquals("application/hal+json", link.getType());
+    }
+
+    @Test
+    public void deprecatedRel() throws IOException {
+        HalResource result =
+                objectMapper.readValue("{\"_links\":{" +
+                                "\"self\":{\"href\":\"http://example.com/data\",\"deprecation\":\"http://example.com/deprecation\"}" +
+                                "}}",
+                        HalResource.class);
+
+        HalLink link = result.getRel("self").getSingleLink();
+        assertTrue(link.isDeprecated());
+        assertEquals(URI.create("http://example.com/deprecation"), link.getDeprecationUri());
     }
 }

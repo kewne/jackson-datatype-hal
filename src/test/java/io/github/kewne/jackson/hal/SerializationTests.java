@@ -8,6 +8,7 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 
 import java.io.IOException;
+import java.net.URI;
 import java.util.Arrays;
 
 import static io.github.kewne.jackson.hal.HalLink.linkTo;
@@ -90,6 +91,19 @@ public class SerializationTests {
         assertEquals(
                 "{\"_links\":{" +
                         "\"assoc\":{\"href\":\"http://example.com/test\",\"type\":\"application/hal+json\",\"templated\":false}" +
+                        "}}",
+                objectMapper.writeValueAsString(resource));
+    }
+
+    @Test
+    public void deprecatedLink() throws JsonProcessingException {
+        HalResource resource = new HalResource(
+                HalLinks.singleRel("assoc",
+                        linkTo("http://example.com/test",
+                                spec -> spec.deprecated(URI.create("http://example.com/deprecation")))));
+        assertEquals(
+                "{\"_links\":{" +
+                        "\"assoc\":{\"href\":\"http://example.com/test\",\"deprecation\":\"http://example.com/deprecation\",\"templated\":false}" +
                         "}}",
                 objectMapper.writeValueAsString(resource));
     }
