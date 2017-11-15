@@ -108,4 +108,17 @@ public class SerializationTests {
                 objectMapper.writeValueAsString(resource));
     }
 
+    @Test
+    public void linkWithProfile() throws JsonProcessingException {
+        HalResource resource = new HalResource(
+                HalLinks.singleRel("assoc",
+                        linkTo("http://example.com/test",
+                                spec -> spec.profile(URI.create("http://example.com/profile")))));
+        assertEquals(
+                "{\"_links\":{" +
+                        "\"assoc\":{\"href\":\"http://example.com/test\",\"profile\":\"http://example.com/profile\",\"templated\":false}" +
+                        "}}",
+                objectMapper.writeValueAsString(resource));
+    }
+
 }

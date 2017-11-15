@@ -17,15 +17,19 @@ public final class HalLink {
     private final UriTemplate href;
 
     private final String type;
+
     private final URI deprecationUri;
+    private final URI profileUri;
 
     @JsonCreator
     private HalLink(@JsonProperty("href") String href,
                     @JsonProperty("type") String type,
-                    @JsonProperty("deprecation") URI deprecationUri) {
+                    @JsonProperty("deprecation") URI deprecationUri,
+                    @JsonProperty("profile") URI profileUri) {
         this.href = UriTemplate.fromTemplate(Objects.requireNonNull(href));
         this.type = type;
         this.deprecationUri = deprecationUri;
+        this.profileUri = profileUri;
     }
 
     /**
@@ -88,9 +92,16 @@ public final class HalLink {
         return deprecationUri;
     }
 
+    @JsonProperty("profile")
+    public URI getProfileUri() {
+        return profileUri;
+    }
+
     public static final class HalLinkSpecification {
 
         private String type;
+
+        private URI profileUri;
 
         private URI deprecationUri;
 
@@ -121,7 +132,12 @@ public final class HalLink {
         }
 
         private HalLink build(String href) {
-            return new HalLink(href, type, deprecationUri);
+            return new HalLink(href, type, deprecationUri, profileUri);
+        }
+
+        public HalLinkSpecification profile(URI profileUri) {
+            this.profileUri = profileUri;
+            return this;
         }
     }
 }

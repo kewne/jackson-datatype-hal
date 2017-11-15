@@ -61,7 +61,7 @@ public class DeserializationTests {
     }
 
     @Test
-    public void relWithType() throws IOException {
+    public void linkWithType() throws IOException {
         HalResource result =
                 objectMapper.readValue("{\"_links\":{" +
                                 "\"self\":{\"href\":\"http://example.com/data\",\"type\":\"application/hal+json\"}" +
@@ -73,7 +73,7 @@ public class DeserializationTests {
     }
 
     @Test
-    public void deprecatedRel() throws IOException {
+    public void deprecatedLink() throws IOException {
         HalResource result =
                 objectMapper.readValue("{\"_links\":{" +
                                 "\"self\":{\"href\":\"http://example.com/data\",\"deprecation\":\"http://example.com/deprecation\"}" +
@@ -83,5 +83,17 @@ public class DeserializationTests {
         HalLink link = result.getRel("self").getSingleLink();
         assertTrue(link.isDeprecated());
         assertEquals(URI.create("http://example.com/deprecation"), link.getDeprecationUri());
+    }
+
+    @Test
+    public void linkWithProfile() throws IOException {
+        HalResource result =
+                objectMapper.readValue("{\"_links\":{" +
+                                "\"self\":{\"href\":\"http://example.com/data\",\"profile\":\"http://example.com/profile\"}" +
+                                "}}",
+                        HalResource.class);
+
+        HalLink link = result.getRel("self").getSingleLink();
+        assertEquals(URI.create("http://example.com/profile"), link.getProfileUri());
     }
 }
