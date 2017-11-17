@@ -20,16 +20,19 @@ public final class HalLink {
 
     private final URI deprecationUri;
     private final URI profileUri;
+    private final String name;
 
     @JsonCreator
     private HalLink(@JsonProperty("href") String href,
                     @JsonProperty("type") String type,
                     @JsonProperty("deprecation") URI deprecationUri,
-                    @JsonProperty("profile") URI profileUri) {
+                    @JsonProperty("profile") URI profileUri,
+                    @JsonProperty("name") String name) {
         this.href = UriTemplate.fromTemplate(Objects.requireNonNull(href));
         this.type = type;
         this.deprecationUri = deprecationUri;
         this.profileUri = profileUri;
+        this.name = name;
     }
 
     /**
@@ -74,9 +77,6 @@ public final class HalLink {
         return href.expressionCount() > 0;
     }
 
-    /**
-     * @return the
-     */
     @JsonProperty
     public String getType() {
         return type;
@@ -97,6 +97,13 @@ public final class HalLink {
         return profileUri;
     }
 
+    public String getName() {
+        return name;
+    }
+
+    /**
+     * A specification for creating {@linkplain HalLink}.
+     */
     public static final class HalLinkSpecification {
 
         private String type;
@@ -105,8 +112,9 @@ public final class HalLink {
 
         private URI deprecationUri;
 
-        private HalLinkSpecification() {
+        private String name;
 
+        private HalLinkSpecification() {
         }
 
         /**
@@ -131,10 +139,27 @@ public final class HalLink {
             return this;
         }
 
-        private HalLink build(String href) {
-            return new HalLink(href, type, deprecationUri, profileUri);
+        /**
+         * Sets the link's name
+         *
+         * @param name the same to set
+         * @return this specification
+         */
+        public HalLinkSpecification named(String name) {
+            this.name = name;
+            return this;
         }
 
+        private HalLink build(String href) {
+            return new HalLink(href, type, deprecationUri, profileUri, name);
+        }
+
+        /**
+         * Sets the link's profile
+         *
+         * @param profileUri the URI of the profile
+         * @return this specification
+         */
         public HalLinkSpecification profile(URI profileUri) {
             this.profileUri = profileUri;
             return this;

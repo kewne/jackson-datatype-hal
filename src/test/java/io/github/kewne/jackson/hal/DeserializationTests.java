@@ -8,6 +8,7 @@ import org.junit.Test;
 import java.io.IOException;
 import java.net.URI;
 import java.util.List;
+import java.util.Optional;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
@@ -95,5 +96,20 @@ public class DeserializationTests {
 
         HalLink link = result.getRel("self").getSingleLink();
         assertEquals(URI.create("http://example.com/profile"), link.getProfileUri());
+    }
+
+
+    @Test
+    public void linkWithName() throws IOException {
+        HalResource result =
+                objectMapper.readValue("{\"_links\":{" +
+                                "\"assoc\":{\"href\":\"http://example.com/data\",\"name\":\"namedLink\"}" +
+                                "}}",
+                        HalResource.class);
+
+        Optional<HalLink> existingLink = result.getRel("assoc").getNamedLink("namedLink");
+        assertTrue(existingLink.isPresent());
+        assertEquals("http://example.com/data", existingLink.get().getHref());
+        assertEquals("namedLink", existingLink.get().getName());
     }
 }
