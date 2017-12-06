@@ -112,4 +112,18 @@ public class DeserializationTests {
         assertEquals("http://example.com/data", existingLink.get().getHref());
         assertEquals("namedLink", existingLink.get().getName());
     }
+
+    @Test
+    public void linkWithHrefLang() throws IOException {
+        HalResource result =
+                objectMapper.readValue("{\"_links\":{" +
+                                "\"assoc\":{\"href\":\"http://example.com/data\",\"hreflang\":\"pt\"}" +
+                                "}}",
+                        HalResource.class);
+
+        HalLink existingLink = result.getRel("assoc").getSingleLink();
+        assertEquals("http://example.com/data", existingLink.getHref());
+        assertEquals("pt", existingLink.getHreflang());
+
+    }
 }
