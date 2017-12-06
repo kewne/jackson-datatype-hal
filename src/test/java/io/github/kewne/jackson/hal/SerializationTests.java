@@ -134,4 +134,17 @@ public class SerializationTests {
                 objectMapper.writeValueAsString(resource));
     }
 
+    @Test
+    public void hreflang() throws JsonProcessingException {
+        HalResource resource = new HalResource(
+                HalLinks.singleRel("assoc",
+                        linkTo("http://example.com/test",
+                                spec -> spec.hreflang("pt"))));
+        assertEquals(
+                "{\"_links\":{" +
+                        "\"assoc\":{\"href\":\"http://example.com/test\",\"hreflang\":\"pt\",\"templated\":false}" +
+                        "}}",
+                objectMapper.writeValueAsString(resource));
+    }
+
 }

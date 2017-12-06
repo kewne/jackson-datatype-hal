@@ -55,4 +55,5 @@ public final class HalRel {
                 .filter(hl -> linkName.equals(hl.getName()))
                 .findAny();
     }
+
 }

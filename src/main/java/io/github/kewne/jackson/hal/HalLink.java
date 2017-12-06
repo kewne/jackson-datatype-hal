@@ -21,18 +21,21 @@ public final class HalLink {
     private final URI deprecationUri;
     private final URI profileUri;
     private final String name;
+    private final String hreflang;
 
     @JsonCreator
     private HalLink(@JsonProperty("href") String href,
                     @JsonProperty("type") String type,
                     @JsonProperty("deprecation") URI deprecationUri,
                     @JsonProperty("profile") URI profileUri,
-                    @JsonProperty("name") String name) {
+                    @JsonProperty("name") String name,
+                    @JsonProperty("hreflang") String hreflang) {
         this.href = UriTemplate.fromTemplate(Objects.requireNonNull(href));
         this.type = type;
         this.deprecationUri = deprecationUri;
         this.profileUri = profileUri;
         this.name = name;
+        this.hreflang = hreflang;
     }
 
     /**
@@ -51,13 +54,13 @@ public final class HalLink {
      * Creates a link conforming to a link specification.
      *
      * @param href        the href to set in the link
-     * @param specBuilder a consumer used to customize the specification of the link to build.
-     *                    The specification passed in has all optional fields set to {@code null}.
+     * @param builderConsumer a consumer used to customize the builder of the link to build.
+     *                    The builder passed in has all optional fields set to {@code null}.
      * @return a link to the given href obeying the specification
      */
-    public static HalLink linkTo(String href, Consumer<HalLinkSpecification> specBuilder) {
-        HalLinkSpecification spec = new HalLinkSpecification();
-        specBuilder.accept(spec);
+    public static HalLink linkTo(String href, Consumer<HalLinkBuilder> builderConsumer) {
+        HalLinkBuilder spec = new HalLinkBuilder();
+        builderConsumer.accept(spec);
         return spec.build(href);
     }
 
@@ -101,10 +104,14 @@ public final class HalLink {
         return name;
     }
 
+    public String getHreflang() {
+        return hreflang;
+    }
+
     /**
-     * A specification for creating {@linkplain HalLink}.
+     * A builder for creating {@linkplain HalLink}.
      */
-    public static final class HalLinkSpecification {
+    public static final class HalLinkBuilder {
 
         private String type;
 
@@ -114,7 +121,9 @@ public final class HalLink {
 
         private String name;
 
-        private HalLinkSpecification() {
+        private String hreflang;
+
+        private HalLinkBuilder() {
         }
 
         /**
@@ -123,7 +132,7 @@ public final class HalLink {
          * @param type the type to set
          * @return this specification
          */
-        public HalLinkSpecification type(String type) {
+        public HalLinkBuilder type(String type) {
             this.type = type;
             return this;
         }
@@ -134,7 +143,7 @@ public final class HalLink {
          * @param deprecationUri a URI for a resource describing the reason for deprecation
          * @return this specification
          */
-        public HalLinkSpecification deprecated(URI deprecationUri) {
+        public HalLinkBuilder deprecated(URI deprecationUri) {
             this.deprecationUri = deprecationUri;
             return this;
         }
@@ -145,13 +154,13 @@ public final class HalLink {
          * @param name the same to set
          * @return this specification
          */
-        public HalLinkSpecification named(String name) {
+        public HalLinkBuilder named(String name) {
             this.name = name;
             return this;
         }
 
         private HalLink build(String href) {
-            return new HalLink(href, type, deprecationUri, profileUri, name);
+            return new HalLink(href, type, deprecationUri, profileUri, name, hreflang);
         }
 
         /**
@@ -160,8 +169,20 @@ public final class HalLink {
          * @param profileUri the URI of the profile
          * @return this specification
          */
-        public HalLinkSpecification profile(URI profileUri) {
+        public HalLinkBuilder profile(URI profileUri) {
             this.profileUri = profileUri;
+            return this;
+        }
+
+
+        /**
+         * Sets the link's hreflang property
+         *
+         * @param hreflang the hreflang of the link
+         * @return this specification
+         */
+        public HalLinkBuilder hreflang(String hreflang) {
+            this.hreflang = hreflang;
             return this;
         }
     }
